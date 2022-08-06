@@ -17,18 +17,18 @@ KEYWORDS="~amd64"
 S="${WORKDIR}/dart-sdk"
 
 src_install() {
-	local LIBDIR="/usr/$(get_libdir)"
+	local BASEDIR="/opt"
 
-	insinto "${LIBDIR}"
+	insinto "${BASEDIR}"
 	doins -r "${S}/"
 
-	exeinto "${LIBDIR}/dart-sdk/bin"
+	exeinto "${BASEDIR}/dart-sdk/bin"
 	for exe in dart dart2js dartanalyzer dartaotruntime dartdevc; do
 		doexe "${S}/bin/${exe}"
 	done
 
-	exeinto "${LIBDIR}/dart-sdk/bin/utils"
+	exeinto "${BASEDIR}/dart-sdk/bin/utils"
 	doexe "${S}/bin/utils/gen_snapshot"
 
-	dosym "/usr/$(get_libdir)/dart-sdk/bin/dart" "/usr/bin/dart"
+	dosym "${BASEDIR}/dart-sdk/bin/dart" "/usr/bin/dart"
 }
