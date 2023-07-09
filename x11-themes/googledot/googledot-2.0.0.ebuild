@@ -7,12 +7,12 @@ inherit xdg
 
 DESCRIPTION="An opensource cursor theme inspired by Google"
 HOMEPAGE="https://github.com/ful1e5/Google_Cursor"
-MY_P="GoogleDot"
+MY_PN="GoogleDot"
 SRC_URI="
-	black?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_P}-Black.tar.gz )
-	blue?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_P}-Blue.tar.gz )
-	red?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_P}-Red.tar.gz )
-	white?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_P}-White.tar.gz )
+	black?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_PN}-Black.tar.gz )
+	blue?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_PN}-Blue.tar.gz )
+	red?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_PN}-Red.tar.gz )
+	white?	( https://github.com/ful1e5/Google_Cursor/releases/download/v${PV}/${MY_PN}-White.tar.gz )
 "
 
 LICENSE="GPL-3"
@@ -25,6 +25,7 @@ S="${WORKDIR}"
 
 src_install() {
 	dodir /usr/share/icons/
+
 	insinto /usr/share/icons/
-	doins -r "${WORKDIR}"/${MY_P}-*
+	doins -r *
 }
