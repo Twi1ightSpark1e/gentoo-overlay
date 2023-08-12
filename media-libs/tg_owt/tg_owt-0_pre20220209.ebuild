@@ -10,8 +10,10 @@ HOMEPAGE="https://github.com/desktop-app/tg_owt"
 
 TG_OWT_COMMIT="4cba1acdd718b700bb33945c0258283689d4eac7"
 LIBYUV_COMMIT="ad890067f661dc747a975bc55ba3767fe30d4452"
+LIBSRTP_PV="2.5.0"
 SRC_URI="https://github.com/desktop-app/tg_owt/archive/${TG_OWT_COMMIT}.tar.gz -> ${P}.tar.gz
-	https://archive.org/download/libyuv-${LIBYUV_COMMIT}.tar/libyuv-${LIBYUV_COMMIT}.tar.gz"
+	https://archive.org/download/libyuv-${LIBYUV_COMMIT}.tar/libyuv-${LIBYUV_COMMIT}.tar.gz
+	https://github.com/cisco/libsrtp/archive/refs/tags/v${LIBSRTP_PV}.tar.gz -> libsrtp-${LIBSRTP_PV}.tar.gz"
 S="${WORKDIR}/${PN}-${TG_OWT_COMMIT}"
 # Fetch libyuv archive from: https://chromium.googlesource.com/libyuv/libyuv/+archive/${LIBYUV_COMMIT}.tar.gz
 
@@ -21,17 +23,20 @@ KEYWORDS="amd64 ~arm64 ~ppc64 ~riscv"
 IUSE="screencast +X"
 
 # This package's USE flags may change the ABI and require a rebuild of
-#  dependent pacakges. As such, one should make sure to depend on
+#  dependent packages. As such, one should make sure to depend on
 #  media-libs/tg_owt[x=,y=,z=] for any package that uses this.
 
 # Bundled libs:
 # - libyuv (no stable versioning, www-client/chromium and media-libs/libvpx bundle it)
 # - libsrtp (project uses private APIs)
 # - pffft (no stable versioning, patched)
+#
+# dev-libs/openssl minimum version required is 1.1.0 because of libsrtp:
+# https://github.com/cisco/libsrtp/commit/5bceeabc46b83e4bcad580b9ad4f25e879a22848
 DEPEND="
 	>=dev-cpp/abseil-cpp-20211102.0:=[cxx17(+)]
 	dev-libs/libevent:=
-	dev-libs/openssl:=
+	>=dev-libs/openssl-1.1.0:=
 	dev-libs/protobuf:=
 	media-libs/libjpeg-turbo:=
 	>=media-libs/libvpx-1.10.0:=
@@ -62,12 +67,18 @@ PATCHES=(
 	"${FILESDIR}/tg_owt-0_pre20211207-fix-dcsctp-references.patch"
 	"${FILESDIR}/tg_owt-0_pre20220209-gcc-12-cstdint.patch"
 	"${FILESDIR}/tg_owt-0_pre20220209-gcc-12-cstddef.patch"
+	"${FILESDIR}/tg_owt-0_pre20220209-libsrtp-as-submodule.patch" # OpenSSL-3 compatibility
 )
 
 src_unpack() {
 	unpack "${P}.tar.gz"
+	unpack "libsrtp-${LIBSRTP_PV}.tar.gz"
+
 	cd "${S}/src/third_party/libyuv" || die
 	unpack "libyuv-${LIBYUV_COMMIT}.tar.gz"
+
+	rm -r "${S}/src/third_party/libsrtp" || die
+	cp -rl "${WORKDIR}/libsrtp-${LIBSRTP_PV}" "${S}/src/third_party/libsrtp" || die
 }
 
 src_prepare() {

@@ -1,0 +1,95 @@
+From 0614aac699b1a53242ffe2664e3724533bf64f97 Mon Sep 17 00:00:00 2001
+From: John Preston <johnprestonmail@gmail.com>
+Date: Fri, 28 Apr 2023 14:32:00 +0400
+Subject: [PATCH 1/2] Build: Add explicit libsrtp_config.
+
+---
+ src/third_party/libsrtp_config/config.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+ create mode 100644 src/third_party/libsrtp_config/config.h
+
+diff --git a/src/third_party/libsrtp_config/config.h b/src/third_party/libsrtp_config/config.h
+new file mode 100644
+index 00000000..1edcdc5c
+--- /dev/null
++++ b/src/third_party/libsrtp_config/config.h
+@@ -0,0 +1,15 @@
++#define PACKAGE_VERSION "2.5.0"
++#define PACKAGE_STRING "libsrtp2 2.5.0"
++
++#define GCM
++#define OPENSSL
++#define CPU_CISC 1
++#define HAVE_INTTYPES_H 1
++#define HAVE_STDINT_H 1
++#define HAVE_STDLIB_H 1
++#define HAVE_SYS_TYPES_H 1
++#define HAVE_UINT8_T 1
++#define HAVE_UINT16_T 1
++#define HAVE_UINT32_T 1
++#define HAVE_UINT64_T 1
++#define HAVE_INT32_T 1
+
+From 9d120195334db4f232c925529aa7601656dc59d7 Mon Sep 17 00:00:00 2001
+From: John Preston <johnprestonmail@gmail.com>
+Date: Fri, 28 Apr 2023 14:32:06 +0400
+Subject: [PATCH 2/2] CMake: Fix build with libsrtp v2.5.0.
+
+---
+ cmake/init_target.cmake | 4 +++-
+ cmake/libsrtp.cmake     | 8 +++++---
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/cmake/init_target.cmake b/cmake/init_target.cmake
+index 5f0b15a2..808bdc79 100644
+--- a/cmake/init_target.cmake
++++ b/cmake/init_target.cmake
+@@ -37,8 +37,10 @@ function(init_target target_name) # init_target(my_target folder_name)
+         target_compile_definitions(${target_name}
+         PRIVATE
+             WIN32_LEAN_AND_MEAN
+-            HAVE_WINSOCK2_H
+             NOMINMAX
++            HAVE_WINSOCK2_H
++            HAVE_WINDOWS_H
++            HAVE_X86
+             HAVE_SSE2
+         )
+ 
+diff --git a/cmake/libsrtp.cmake b/cmake/libsrtp.cmake
+index 4754f135..5124312d 100644
+--- a/cmake/libsrtp.cmake
++++ b/cmake/libsrtp.cmake
+@@ -11,8 +11,10 @@ PRIVATE
+     crypto/cipher/aes_gcm_ossl.c
+     crypto/cipher/aes_icm_ossl.c
+     crypto/cipher/cipher.c
++    crypto/cipher/cipher_test_cases.c
+     crypto/cipher/null_cipher.c
+     crypto/hash/auth.c
++    crypto/hash/auth_test_cases.c
+     crypto/hash/hmac_ossl.c
+     crypto/hash/null_auth.c
+     crypto/kernel/alloc.c
+@@ -20,18 +22,18 @@ PRIVATE
+     crypto/kernel/err.c
+     crypto/kernel/key.c
+     crypto/math/datatypes.c
+-    crypto/math/stat.c
+     crypto/replay/rdb.c
+     crypto/replay/rdbx.c
+-    crypto/replay/ut_sim.c
+-    srtp/ekt.c
+     srtp/srtp.c
+ )
+ 
++target_compile_definitions(libsrtp PRIVATE HAVE_CONFIG_H)
++
+ target_include_directories(libsrtp
+ PUBLIC
+     $<BUILD_INTERFACE:${libsrtp_loc}/include>
+     $<BUILD_INTERFACE:${libsrtp_loc}/crypto/include>
++    $<BUILD_INTERFACE:${libsrtp_loc}/../libsrtp_config>
+     $<INSTALL_INTERFACE:${webrtc_includedir}/third_party/libsrtp/include>
+     $<INSTALL_INTERFACE:${webrtc_includedir}/third_party/libsrtp/crypto/include>
+ )
