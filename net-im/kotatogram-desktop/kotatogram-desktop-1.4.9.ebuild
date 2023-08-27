@@ -43,7 +43,7 @@ RDEPEND="
 	media-libs/opus:=
 	media-libs/rnnoise
 	~media-libs/tg_owt-0_pre20220209[screencast=,X=]
-	media-video/ffmpeg:=[opus]
+	<media-video/ffmpeg-5:=[opus]
 	sys-libs/zlib:=[minizip]
 	dbus? (
 		dev-cpp/glibmm:2
