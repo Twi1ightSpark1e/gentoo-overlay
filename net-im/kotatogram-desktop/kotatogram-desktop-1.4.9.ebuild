@@ -53,7 +53,7 @@ RDEPEND="
 	enchant? ( app-text/enchant:= )
 	hunspell? ( >=app-text/hunspell-1.7:= )
 	jemalloc? ( dev-libs/jemalloc:=[-lazy-lock] )
-	wayland? ( kde-frameworks/kwayland:= )
+	wayland? ( kde-plasma/kwayland:= )
 	X? ( x11-libs/libxcb:= )
 "
 DEPEND="${RDEPEND}
